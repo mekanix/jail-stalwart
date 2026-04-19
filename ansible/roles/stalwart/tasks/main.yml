@@ -1,0 +1,22 @@
+---
+- name: install stalwart packages
+  with_items: "{{ stalwart_packages }}"
+  package:
+    name: "{{ item.name }}"
+    state: latest
+  notify:
+    - restart stalwart
+
+- name: enable stalwart
+  template:
+    src: stalwart.j2
+    dest: /etc/rc.conf.d/stalwart
+  notify:
+    - restart stalwart
+
+- name: configure stalwart
+  template:
+    src: config.toml.j2
+    dest: /usr/local/etc/stalwart/config.toml
+  notify:
+    - restart stalwart

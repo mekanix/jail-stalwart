@@ -1,0 +1,91 @@
+#############################################
+# Stalwart Configuration File
+#############################################
+
+[server.listener."smtp"]
+bind = ["0.0.0.0:25", "[::]:25"]
+protocol = "smtp"
+
+[server.listener."submission"]
+bind = ["0.0.0.0:587", "[::]:587"]
+protocol = "smtp"
+tls.implicit = true
+
+[server.listener."submissions"]
+bind = ["0.0.0.0:465", "[::]:465"]
+protocol = "smtp"
+tls.implicit = true
+
+[server.listener."imaptls"]
+bind = ["0.0.0.0:993", "[::]:993"]
+protocol = "imap"
+tls.implicit = true
+
+[server.listener."sieve"]
+bind = ["0.0.0.0:4190", "[::]:4190"]
+protocol = "managesieve"
+
+[server.listener."{{ stalwart_http_listener_name }}"]
+protocol = "http"
+bind = {{ stalwart_http_bind | tojson }}
+tls.implicit = {{ stalwart_http_tls_implicit | tojson }}
+
+[storage]
+data = "rocksdb"
+fts = "rocksdb"
+blob = "rocksdb"
+lookup = "rocksdb"
+directory = "ldap"
+
+[store."rocksdb"]
+type = "rocksdb"
+path = "%{env:STALWART_PATH}%/data"
+compression = "lz4"
+
+[directory."internal"]
+type = "internal"
+store = "rocksdb"
+
+[directory."ldap"]
+type = "ldap"
+url = "{{ stalwart_ldap_url }}"
+base-dn = "{{ stalwart_ldap_base_dn }}"
+timeout = "{{ stalwart_ldap_timeout }}"
+
+[directory."ldap".bind]
+dn = "{{ stalwart_ldap_bind_dn }}"
+secret = "{{ stalwart_ldap_bind_secret }}"
+
+[directory."ldap".bind.auth]
+enable = {{ stalwart_ldap_bind_auth_enable | tojson }}
+method = "{{ stalwart_ldap_bind_auth_method }}"
+
+[directory."ldap".attributes]
+name = "{{ stalwart_ldap_name_attribute }}"
+email = "{{ stalwart_ldap_email_attribute }}"
+email-alias = "{{ stalwart_ldap_email_alias_attribute }}"
+class = "{{ stalwart_ldap_class_attribute }}"
+secret = "{{ stalwart_ldap_secret_attribute }}"
+secret-changed = "{{ stalwart_ldap_secret_changed_attribute }}"
+
+[directory."ldap".filter]
+name = "{{ stalwart_ldap_name_filter }}"
+email = "{{ stalwart_ldap_email_filter }}"
+
+[tracer."stdout"]
+type = "stdout"
+level = "info"
+ansi = false
+enable = true
+
+[authentication.fallback-admin]
+user = "admin"
+secret = "{{ stalwart_admin_secret }}"
+
+{% for domain in stalwart_certificate_domains %}
+[certificate."{{ domain }}"]
+cert = "%{file:/etc/certs/{{ domain }}.cer}%"
+private-key = "%{file:/etc/certs/{{ domain }}.key}%"
+default = {{ loop.first | tojson }}
+
+{% endfor %}

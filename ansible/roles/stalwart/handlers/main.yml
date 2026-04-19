@@ -1,0 +1,5 @@
+---
+- name: restart stalwart
+  service:
+    name: stalwart
+    state: restarted

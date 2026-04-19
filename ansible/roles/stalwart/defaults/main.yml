@@ -1,0 +1,27 @@
+---
+stalwart_admin_secret: "change-me"
+stalwart_http_listener_name: "https"
+stalwart_http_bind:
+  - "0.0.0.0:443"
+  - "[::]:443"
+stalwart_http_tls_implicit: true
+stalwart_certificate_domains:
+  - "perfectform.band"
+
+stalwart_ldap_url: "ldaps://ldap.nsd1.sys.it.com:636"
+stalwart_ldap_base_dn: "dc=account,dc=ldap"
+stalwart_ldap_timeout: "30s"
+stalwart_ldap_bind_dn: "cn=stalwart,dc=service,dc=ldap"
+stalwart_ldap_bind_secret: "b0XyhEjUXa6RrIwMOF0RLmN8iKTPEzPz"
+stalwart_ldap_bind_auth_enable: true
+stalwart_ldap_bind_auth_method: "lookup"
+
+stalwart_ldap_name_attribute: "uid"
+stalwart_ldap_email_attribute: "mail"
+stalwart_ldap_email_alias_attribute: "otherMailbox"
+stalwart_ldap_class_attribute: "objectClass"
+stalwart_ldap_secret_attribute: "userPassword"
+stalwart_ldap_secret_changed_attribute: "modifyTimestamp"
+
+stalwart_ldap_name_filter: "(&(objectClass=person)(memberOf=cn=mail,dc=group,dc=ldap)(userClass=active)(|(uid=?)(mail=?)(otherMailbox=?)))"
+stalwart_ldap_email_filter: "(&(objectClass=person)(memberOf=cn=mail,dc=group,dc=ldap)(userClass=active)(|(mail=?)(otherMailbox=?)))"
